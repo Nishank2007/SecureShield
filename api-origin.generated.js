@@ -1,0 +1,1 @@
+window.__API_PORT__="5000";window.__API_ORIGIN__="http://127.0.0.1:5000";

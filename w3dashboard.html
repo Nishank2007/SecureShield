@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SecureShield W3Schools Portal - Learn to code with the world's most secure learning platform. HTML, CSS, JavaScript, Python tutorials and more.">
+    <title>W3Schools SecureShield | Online Web Tutorials</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ── RESET & TOKENS ── */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --w3-green: #04AA6D;
+            --w3-green-dark: #059862;
+            --w3-green-light: #e6f7f1;
+            --w3-blue: #2196F3;
+            --w3-orange: #FF9800;
+            --w3-purple: #9C27B0;
+            --w3-red: #F44336;
+            --w3-teal: #009688;
+            --bg: #ffffff;
+            --bg2: #f8f9fa;
+            --bg3: #f1f3f4;
+            --text: #1a1a2e;
+            --text-muted: #555;
+            --border: #e0e0e0;
+            --nav-bg: #282A35;
+            --nav-text: #d9d9d9;
+            --nav-hover: #04AA6D;
+            --shadow: 0 2px 8px rgba(0,0,0,0.12);
+            --radius: 6px;
+        }
+        body { font-family: 'Source Sans 3', 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); font-size:15px; line-height:1.6; }
+        a { color:var(--w3-blue); text-decoration:none; }
+        a:hover { text-decoration:underline; }
+
+        /* ── TOP HEADER BAR ── */
+        #topbar {
+            background:var(--nav-bg);
+            color:var(--nav-text);
+            padding:0;
+            position:sticky; top:0; z-index:1000;
+        }
+        .topbar-inner {
+            display:flex; align-items:center; flex-wrap:wrap; gap:0;
+            max-width:none; padding:0;
+        }
+        .logo-wrap {
+            background:#04AA6D;
+            padding:0.6rem 1.2rem;
+            display:flex; align-items:center; gap:0.4rem;
+            text-decoration:none; flex-shrink:0;
+        }
+        .logo-box {
+            font-size:1.4rem; font-weight:900; color:#fff;
+            font-family:'JetBrains Mono', monospace; letter-spacing:-0.05em;
+        }
+        .logo-sub { font-size:0.65rem; color:rgba(255,255,255,0.8); line-height:1; }
+        .nav-links {
+            display:flex; align-items:stretch; flex:1; overflow:hidden;
+        }
+        .nav-links a, .nav-dropdown > button {
+            color:var(--nav-text); padding:0.85rem 1rem;
+            font-size:0.9rem; font-weight:500; white-space:nowrap;
+            background:none; border:none; cursor:pointer; font-family:inherit;
+            transition:background 0.2s, color 0.2s;
+            display:flex; align-items:center; gap:0.25rem;
+        }
+        .nav-links a:hover, .nav-dropdown:hover > button { background:rgba(255,255,255,0.08); color:#fff; text-decoration:none; }
+
+        /* Dropdown */
+        .nav-dropdown { position:relative; }
+        .dropdown-menu {
+            position:absolute; top:100%; left:0;
+            background:#fff; border:1px solid #ddd; border-radius:0 0 6px 6px;
+            min-width:220px; box-shadow:var(--shadow);
+            opacity:0; pointer-events:none; transform:translateY(-8px);
+            transition:opacity 0.2s, transform 0.2s; z-index:999;
+        }
+        .nav-dropdown:hover .dropdown-menu { opacity:1; pointer-events:all; transform:translateY(0); }
+        .dropdown-menu a {
+            display:flex; align-items:center; gap:0.5rem;
+            padding:0.6rem 1.2rem; color:#333; font-size:0.88rem; font-weight:500;
+        }
+        .dropdown-menu a:hover { background:var(--bg2); color:var(--w3-green); text-decoration:none; }
+        .dropdown-menu .dd-section {
+            padding:0.4rem 1.2rem 0.2rem;
+            font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
+            color:#888; border-top:1px solid #eee; margin-top:0.25rem;
+        }
+
+        /* Search bar in topbar */
+        .topbar-search {
+            display:flex; align-items:center; padding:0.4rem 0.75rem; gap:0.5rem;
+            margin-left:auto;
+        }
+        .topbar-search input {
+            background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+            border-radius:20px; padding:0.35rem 1rem; color:#fff; font-size:0.85rem;
+            width:180px; outline:none; transition:width 0.3s;
+        }
+        .topbar-search input::placeholder { color:rgba(255,255,255,0.5); }
+        .topbar-search input:focus { width:240px; background:rgba(255,255,255,0.15); border-color:var(--w3-green); }
+        .topbar-search button {
+            background:var(--w3-green); border:none; padding:0.35rem 0.8rem;
+            border-radius:20px; color:#fff; cursor:pointer; font-size:0.82rem; font-weight:600;
+        }
+
+        /* User pill in topbar */
+        .user-pill {
+            display:flex; align-items:center; gap:0.5rem;
+            background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);
+            border-radius:20px; padding:0.3rem 0.75rem 0.3rem 0.3rem;
+            margin: 0.4rem 0.75rem; cursor:pointer; flex-shrink:0;
+        }
+        .user-avatar {
+            width:28px; height:28px; border-radius:50%;
+            background:linear-gradient(135deg,#04AA6D,#00d2ff);
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:0.75rem; color:#fff;
+        }
+        .user-name { font-size:0.82rem; font-weight:600; color:#fff; }
+        .btn-logout {
+            background:transparent; border:1px solid rgba(239,68,68,0.4);
+            color:#ef4444; padding:0.3rem 0.8rem; border-radius:20px;
+            margin:0.4rem 0.75rem 0.4rem 0; cursor:pointer;
+            font-size:0.82rem; font-weight:600; transition:0.2s; flex-shrink:0;
+        }
+        .btn-logout:hover { background:#ef4444; color:#fff; }
+
+        /* ── SECOND NAV BAR (tutorials row) ── */
+        #subnav {
+            background:#f1f1f1; border-bottom:3px solid var(--w3-green);
+            overflow-x:auto; white-space:nowrap;
+        }
+        #subnav a {
+            display:inline-block; padding:0.6rem 1rem; font-size:0.82rem; font-weight:600;
+            color:#555; transition:background 0.2s, color 0.2s;
+        }
+        #subnav a:hover { background:var(--w3-green); color:#fff; text-decoration:none; }
+        #subnav a.active { background:var(--w3-green); color:#fff; }
+
+        /* ── HERO / BANNER ── */
+        #hero {
+            background:linear-gradient(120deg, #282A35 0%, #1a1c26 60%, #0d1015 100%);
+            padding:3.5rem 2rem 3rem; text-align:center;
+            position:relative; overflow:hidden;
+        }
+        #hero::before {
+            content:'';
+            position:absolute; top:-80px; left:50%; transform:translateX(-50%);
+            width:800px; height:400px;
+            background:radial-gradient(ellipse, rgba(4,170,109,0.2) 0%, transparent 70%);
+            pointer-events:none;
+        }
+        #hero h1 { font-size:2.8rem; font-weight:800; color:#fff; margin-bottom:0.5rem; letter-spacing:-0.02em; }
+        #hero h1 span { color:var(--w3-green); }
+        #hero p { font-size:1.15rem; color:#aaa; max-width:540px; margin:0 auto 2rem; }
+        .hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+        .btn-hero-primary {
+            background:var(--w3-green); color:#fff; padding:0.85rem 2.2rem;
+            border-radius:4px; font-weight:700; font-size:1rem; transition:0.2s;
+        }
+        .btn-hero-primary:hover { background:var(--w3-green-dark); text-decoration:none; transform:translateY(-2px); box-shadow:0 8px 20px rgba(4,170,109,0.3); }
+        .btn-hero-secondary {
+            background:transparent; border:2px solid rgba(255,255,255,0.2);
+            color:#fff; padding:0.8rem 2rem; border-radius:4px; font-weight:600; font-size:1rem; transition:0.2s;
+        }
+        .btn-hero-secondary:hover { border-color:var(--w3-green); color:var(--w3-green); text-decoration:none; }
+
+        /* Try-It Bar */
+        .try-editor {
+            background:#1e2435; border:1px solid rgba(255,255,255,0.1);
+            border-radius:12px; max-width:700px; margin:2.5rem auto 0;
+            overflow:hidden; text-align:left;
+        }
+        .try-editor-header {
+            background:#111827; padding:0.6rem 1rem;
+            display:flex; align-items:center; gap:0.5rem; justify-content:space-between;
+        }
+        .try-editor-dots { display:flex; gap:0.4rem; }
+        .dot { width:12px; height:12px; border-radius:50%; }
+        .dot-r { background:#ef4444; } .dot-y { background:#f59e0b; } .dot-g { background:#10b981; }
+        .try-editor-label { font-size:0.75rem; color:#666; font-family:'JetBrains Mono', monospace; }
+        .try-btn { background:var(--w3-green); color:#fff; padding:0.3rem 1rem; border-radius:4px; font-size:0.82rem; font-weight:700; border:none; cursor:pointer; }
+        .try-code {
+            font-family:'JetBrains Mono', monospace; font-size:0.85rem;
+            padding:1.25rem 1.5rem; color:#e2e8f0; line-height:1.8;
+        }
+        .kw { color:#f472b6; } .tag { color:#60a5fa; } .attr { color:#86efac; }
+        .val { color:#fbbf24; } .txt { color:#e2e8f0; } .com { color:#64748b; }
+
+        /* ── MAIN CONTENT ── */
+        .main-wrap { max-width:1280px; margin:0 auto; padding:2rem 1.5rem; }
+
+        /* Section titles */
+        .section-title {
+            font-size:1.6rem; font-weight:800; margin-bottom:1.25rem;
+            display:flex; align-items:center; gap:0.5rem;
+        }
+        .section-title::after {
+            content:''; flex:1; height:2px; background:linear-gradient(to right, var(--w3-green), transparent);
+            margin-left:0.75rem;
+        }
+
+        /* ── LANGUAGE GRID ── */
+        .lang-grid {
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap:1rem; margin-bottom:3rem;
+        }
+        .lang-card {
+            background:#fff; border:1px solid var(--border); border-radius:var(--radius);
+            padding:1.25rem 1rem; text-align:center;
+            transition:box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+            cursor:pointer;
+        }
+        .lang-card:hover { box-shadow:0 6px 20px rgba(4,170,109,0.15); transform:translateY(-4px); border-color:var(--w3-green); }
+        .lang-card .lc-icon { font-size:2.2rem; margin-bottom:0.5rem; display:block; }
+        .lang-card .lc-name { font-weight:700; font-size:0.95rem; color:var(--text); display:block; }
+        .lang-card .lc-tag { font-size:0.72rem; color:#888; display:block; margin-top:0.2rem; }
+        .lang-card .lc-bar { background:#eee; border-radius:10px; height:4px; margin-top:0.75rem; overflow:hidden; }
+        .lang-card .lc-fill { height:100%; border-radius:10px; background:var(--w3-green); transition:width 1s ease; }
+        .lang-dot {
+            display:inline-block; width:8px; height:8px; border-radius:50%;
+            margin-right:0.25rem;
+        }
+
+        /* ── FEATURED SECTIONS (3 col) ── */
+        .featured-grid {
+            display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+            gap:1.5rem; margin-bottom:3rem;
+        }
+        .feat-card {
+            border-radius:12px; overflow:hidden;
+            box-shadow:var(--shadow); transition:transform 0.2s, box-shadow 0.2s;
+        }
+        .feat-card:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(0,0,0,0.15); }
+        .feat-card-header { padding:1.5rem 1.5rem 1rem; }
+        .feat-card-header h3 { font-size:1.15rem; font-weight:700; margin-bottom:0.3rem; }
+        .feat-card-header p { font-size:0.85rem; color:#666; }
+        .feat-card-footer { padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.15); }
+        .feat-card-footer a { font-size:0.85rem; font-weight:700; }
+        /* Colors per card */
+        .fc-green { background:linear-gradient(135deg,#04AA6D,#029558); color:#fff; }
+        .fc-blue  { background:linear-gradient(135deg,#2196F3,#1565C0); color:#fff; }
+        .fc-purple{ background:linear-gradient(135deg,#9C27B0,#6A1B9A); color:#fff; }
+        .fc-teal  { background:linear-gradient(135deg,#009688,#00695C); color:#fff; }
+        .fc-orange{ background:linear-gradient(135deg,#FF9800,#E65100); color:#fff; }
+        .fc-dark  { background:linear-gradient(135deg,#282A35,#1a1c26); color:#fff; }
+
+        /* ── EXERCISES / QUIZ / CERT STRIP ── */
+        .strip {
+            display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+            gap:1rem; margin-bottom:3rem; background:var(--bg2); border-radius:12px; padding:1.5rem;
+        }
+        .strip-item {
+            display:flex; align-items:center; gap:0.75rem;
+            padding:0.75rem 1rem; background:#fff; border-radius:var(--radius);
+            border:1px solid var(--border); cursor:pointer; transition:0.2s;
+        }
+        .strip-item:hover { border-color:var(--w3-green); background:var(--w3-green-light); }
+        .strip-icon { font-size:1.4rem; width:36px; text-align:center; flex-shrink:0; }
+        .strip-text h4 { font-size:0.88rem; font-weight:700; color:var(--text); }
+        .strip-text p  { font-size:0.75rem; color:#888; }
+
+        /* ── REFERENCE TABLE ── */
+        .ref-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+            gap:0.75rem; margin-bottom:3rem;
+        }
+        .ref-chip {
+            background:var(--bg2); border:1px solid var(--border); border-radius:4px;
+            padding:0.6rem 1rem; font-size:0.85rem; font-weight:600; color:var(--text);
+            cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:0.5rem;
+        }
+        .ref-chip:hover { background:var(--w3-green); color:#fff; border-color:var(--w3-green); }
+
+        /* ── SECURITY STATUS BAR ── */
+        #sec-bar {
+            background:linear-gradient(90deg,#1d2b53,#0d1321);
+            border-radius:12px; padding:1.25rem 1.5rem;
+            display:flex; align-items:center; flex-wrap:wrap; gap:1rem;
+            margin-bottom:2rem;
+        }
+        .sec-badge {
+            display:flex; align-items:center; gap:0.5rem;
+            background:rgba(4,170,109,0.15); border:1px solid rgba(4,170,109,0.3);
+            border-radius:20px; padding:0.35rem 0.9rem; color:#04AA6D; font-size:0.8rem; font-weight:700;
+        }
+        .sec-dot { width:8px; height:8px; border-radius:50%; background:#04AA6D; animation:pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+        .sec-stats { display:flex; gap:1.5rem; margin-left:auto; flex-wrap:wrap; }
+        .sec-stat { text-align:center; }
+        .sec-stat span { display:block; font-size:1.1rem; font-weight:800; color:#00d2ff; }
+        .sec-stat small { font-size:0.72rem; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; }
+
+        /* ── FOOTER ── */
+        footer {
+            background:var(--nav-bg); color:var(--nav-text);
+            padding:2.5rem 2rem 1.5rem;
+        }
+        .footer-grid {
+            max-width:1280px; margin:0 auto;
+            display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:2rem;
+            padding-bottom:2rem; border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+        .footer-col h5 { color:#fff; font-size:0.9rem; font-weight:700; margin-bottom:0.75rem; }
+        .footer-col a { display:block; color:#aaa; font-size:0.82rem; padding:0.2rem 0; transition:color 0.2s; }
+        .footer-col a:hover { color:var(--w3-green); text-decoration:none; }
+        .footer-bottom { text-align:center; padding-top:1.5rem; color:#555; font-size:0.8rem; }
+
+        /* ── MISC ── */
+        .badge { display:inline-block; padding:0.2rem 0.6rem; border-radius:20px; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
+        .badge-new { background:#04AA6D; color:#fff; }
+        .badge-hot { background:#f44336; color:#fff; }
+        .badge-beta { background:#9C27B0; color:#fff; }
+
+        /* Floating alert */ 
+        #float-alert { position:fixed; bottom:1.5rem; right:1.5rem; z-index:9999; display:none; }
+        .alert-toast {
+            background:#1d2b53; border:1px solid rgba(4,170,109,0.4); border-radius:12px;
+            padding:1rem 1.25rem; color:#fff; font-size:0.85rem; max-width:300px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.3); animation:slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from{transform:translateX(120%)} to{transform:translateX(0)} }
+
+        /* Spinner */
+        .spinner { display:inline-block; width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        /* Responsive */
+        @media(max-width:768px){
+            #hero h1 { font-size:1.9rem; }
+            .nav-links { display:none; }
+            .lang-grid { grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); }
+        }
+
+        /* Loading overlay */
+        #loading {
+            position:fixed; inset:0; background:#282A35; z-index:10000;
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem;
+        }
+        #loading.hidden { display:none; }
+        .loading-logo { font-size:2.5rem; font-weight:900; color:#04AA6D; font-family:'JetBrains Mono'; }
+        .loading-bar { width:200px; height:3px; background:rgba(255,255,255,0.1); border-radius:10px; overflow:hidden; }
+        .loading-fill { height:100%; background:var(--w3-green); border-radius:10px; animation:load 1.4s ease-in-out; }
+        @keyframes load { from{width:0} to{width:100%} }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading">
+    <div class="loading-logo">W3</div>
+    <p style="color:#aaa;font-size:0.9rem;">Verifying SecureShield Session…</p>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- Float Alert Toast -->
+<div id="float-alert"><div class="alert-toast" id="toast-msg"></div></div>
+
+<!-- ══════════════════════════════════
+     TOP NAVIGATION BAR
+══════════════════════════════════ -->
+<header id="topbar">
+    <div class="topbar-inner">
+        <!-- Logo -->
+        <a class="logo-wrap" href="#">
+            <div class="logo-box">W3</div>
+            <div class="logo-sub">
+                <div style="font-size:0.85rem;font-weight:700;color:#fff;">Schools</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:0.6rem;">SecureShield</div>
+            </div>
+        </a>
+
+        <!-- Nav Links -->
+        <nav class="nav-links">
+            <!-- Tutorials Dropdown -->
+            <div class="nav-dropdown">
+                <button>Tutorials ▾</button>
+                <div class="dropdown-menu" style="min-width:260px;columns:2;column-gap:0;">
+                    <div class="dd-section">HTML & CSS</div>
+                    <a href="#">HTML</a><a href="#">CSS</a><a href="#">Bootstrap</a>
+                    <a href="#">W3.CSS</a><a href="#">Colors</a>
+                    <div class="dd-section">JavaScript</div>
+                    <a href="#">JavaScript</a><a href="#">React</a><a href="#">jQuery</a>
+                    <a href="#">Vue</a><a href="#">Angular</a>
+                    <div class="dd-section">Backend</div>
+                    <a href="#">Python</a><a href="#">SQL</a><a href="#">PHP</a>
+                    <a href="#">Java</a><a href="#">C++</a><a href="#">Node.js</a>
+                </div>
+            </div>
+
+            <!-- References Dropdown -->
+            <div class="nav-dropdown">
+                <button>References ▾</button>
+                <div class="dropdown-menu">
+                    <div class="dd-section">HTML & CSS</div>
+                    <a href="#">HTML Tags</a>
+                    <a href="#">CSS Reference</a>
+                    <a href="#">Color Names</a>
+                    <div class="dd-section">JavaScript</div>
+                    <a href="#">JS Reference</a>
+                    <a href="#">jQuery Ref</a>
+                    <div class="dd-section">Backend</div>
+                    <a href="#">Python Ref</a>
+                    <a href="#">SQL Ref</a>
+                </div>
+            </div>
+
+            <!-- Exercises Dropdown -->
+            <div class="nav-dropdown">
+                <button>Exercises ▾</button>
+                <div class="dropdown-menu">
+                    <a href="#">HTML Exercises</a>
+                    <a href="#">CSS Exercises</a>
+                    <a href="#">JS Exercises</a>
+                    <a href="#">Python Exercises</a>
+                    <a href="#">SQL Exercises</a>
+                    <div class="dd-section">Practice</div>
+                    <a href="#">Quizzes</a>
+                    <a href="#">Code Challenges</a>
+                </div>
+            </div>
+
+            <!-- Certificates Dropdown -->
+            <div class="nav-dropdown">
+                <button>Certificates ▾</button>
+                <div class="dropdown-menu">
+                    <a href="#">HTML Certificate</a>
+                    <a href="#">CSS Certificate</a>
+                    <a href="#">JS Certificate</a>
+                    <a href="#">Python Certificate</a>
+                    <a href="#">SQL Certificate</a>
+                    <div class="dd-section">Programs</div>
+                    <a href="#">Front End</a>
+                    <a href="#">Full Access</a>
+                    <a href="#">Web Dev.</a>
+                </div>
+            </div>
+
+            <a href="#">Spaces</a>
+            <a href="#">Bootcamps</a>
+            <a href="#" style="color:#f59e0b;font-weight:700;">⭐ Get Plus</a>
+        </nav>
+
+        <!-- Search -->
+        <div class="topbar-search">
+            <input type="text" id="search-input" placeholder="Search tutorials…" onkeydown="handleSearch(event)">
+            <button onclick="doSearch()">Search</button>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-pill" id="user-pill">
+            <div class="user-avatar" id="user-avatar">?</div>
+            <span class="user-name" id="user-name">Loading…</span>
+        </div>
+
+        <!-- Logout -->
+        <button class="btn-logout" onclick="logout()">⏻ Logout</button>
+    </div>
+</header>
+
+<!-- ══════════════════════════════════
+     SUB NAV (Tutorial Quick Links)
+══════════════════════════════════ -->
+<nav id="subnav">
+    <a href="#" class="active">HTML</a>
+    <a href="#">CSS</a>
+    <a href="#">JavaScript</a>
+    <a href="#">Python</a>
+    <a href="#">SQL</a>
+    <a href="#">Java</a>
+    <a href="#">C++</a>
+    <a href="#">PHP</a>
+    <a href="#">React</a>
+    <a href="#">Node.js</a>
+    <a href="#">jQuery</a>
+    <a href="#">Bootstrap</a>
+    <a href="#">TypeScript</a>
+    <a href="#">Django</a>
+    <a href="#">MongoDB</a>
+    <a href="#">Git</a>
+    <a href="#">DSA <span class="badge badge-new">NEW</span></a>
+    <a href="#">AI <span class="badge badge-hot">HOT</span></a>
+</nav>
+
+<!-- ══════════════════════════════════
+     HERO SECTION
+══════════════════════════════════ -->
+<section id="hero">
+    <h1>W3Schools <span>Online</span> Web Tutorials</h1>
+    <p>Learn to code with the world's most trusted — and now most <strong style="color:#04AA6D;">secure</strong> — learning platform.</p>
+    <div class="hero-btns">
+        <a href="#tutorials" class="btn-hero-primary">🚀 Start Learning</a>
+        <a href="#exercises" class="btn-hero-secondary">📝 Practice Now</a>
+    </div>
+
+    <!-- Try-It Code Preview -->
+    <div class="try-editor">
+        <div class="try-editor-header">
+            <div class="try-editor-dots">
+                <div class="dot dot-r"></div>
+                <div class="dot dot-y"></div>
+                <div class="dot dot-g"></div>
+            </div>
+            <span class="try-editor-label">index.html</span>
+            <button class="try-btn" onclick="showToast('🚀 Try It Yourself editor is available in full tutorials!')">Try it »</button>
+        </div>
+        <div class="try-code">
+<span class="com">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;</span><span class="tag">html</span><span class="kw">&gt;</span>
+<span class="kw">&lt;</span><span class="tag">body</span><span class="kw">&gt;</span>
+
+<span class="kw">&lt;</span><span class="tag">h1</span><span class="kw">&gt;</span><span class="txt">My First Heading</span><span class="kw">&lt;/</span><span class="tag">h1</span><span class="kw">&gt;</span>
+<span class="kw">&lt;</span><span class="tag">p</span><span class="kw">&gt;</span><span class="txt">My first paragraph.</span><span class="kw">&lt;/</span><span class="tag">p</span><span class="kw">&gt;</span>
+
+<span class="kw">&lt;/</span><span class="tag">body</span><span class="kw">&gt;</span>
+<span class="kw">&lt;/</span><span class="tag">html</span><span class="kw">&gt;</span>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════ -->
+<main class="main-wrap">
+
+    <!-- 🔒 Security Status Bar -->
+    <div id="sec-bar">
+        <div class="sec-badge"><div class="sec-dot"></div> SecureShield Active</div>
+        <div class="sec-badge" style="border-color:rgba(59,130,246,0.3); color:#60a5fa; background:rgba(59,130,246,0.1);">
+            🔑 MFA Verified
+        </div>
+        <div class="sec-badge" style="border-color:rgba(139,92,246,0.3); color:#a78bfa; background:rgba(139,92,246,0.1);">
+            👁️ Biometrics ON
+        </div>
+        <div class="sec-stats">
+            <div class="sec-stat"><span id="sec-login-time">00:00</span><small>Session Time</small></div>
+            <div class="sec-stat"><span id="sec-threat">0</span><small>Threats Blocked</small></div>
+            <div class="sec-stat"><span id="sec-integrity">100%</span><small>Integrity</small></div>
+        </div>
+    </div>
+
+    <!-- ── TUTORIALS SECTION ── -->
+    <section id="tutorials">
+        <div class="section-title">📚 Learn — Popular Tutorials</div>
+        <div class="lang-grid" id="lang-grid">
+            <!-- Filled by JS -->
+        </div>
+    </section>
+
+    <!-- ── FEATURED CARDS ── -->
+    <section>
+        <div class="section-title">⚡ Featured Learning Paths</div>
+        <div class="featured-grid">
+            <div class="feat-card fc-green">
+                <div class="feat-card-header">
+                    <h3>🌐 HTML & CSS</h3>
+                    <p>Build beautiful, responsive web pages from the ground up.</p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+            <div class="feat-card fc-blue">
+                <div class="feat-card-header">
+                    <h3>⚡ JavaScript</h3>
+                    <p>From DOM manipulation to async/await — master the web's language.</p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+            <div class="feat-card fc-purple">
+                <div class="feat-card-header">
+                    <h3>🐍 Python</h3>
+                    <p>The world's most popular language for AI, data, and backend.</p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+            <div class="feat-card fc-teal">
+                <div class="feat-card-header">
+                    <h3>🗄️ SQL & Databases</h3>
+                    <p>Query, manage, and optimize relational databases with ease.</p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+            <div class="feat-card fc-orange">
+                <div class="feat-card-header">
+                    <h3>🤖 AI & Machine Learning</h3>
+                    <p>Learn the fundamentals of AI, Gen AI, and data science. <span class="badge badge-hot">HOT</span></p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+            <div class="feat-card fc-dark">
+                <div class="feat-card-header">
+                    <h3>🔐 Cyber Security</h3>
+                    <p>Protect your apps with real-world security techniques. <span class="badge badge-new">NEW</span></p>
+                </div>
+                <div class="feat-card-footer">
+                    <a href="#" style="color:rgba(255,255,255,0.8);">Start Tutorial →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── EXERCISES / QUIZZES / CERTS STRIP ── -->
+    <section id="exercises">
+        <div class="section-title">🏆 Practice & Get Certified</div>
+        <div class="strip">
+            <div class="strip-item" onclick="showToast('📝 Exercises coming soon!')">
+                <div class="strip-icon">✍️</div>
+                <div class="strip-text"><h4>Exercises</h4><p>Hands-on coding drills</p></div>
+            </div>
+            <div class="strip-item" onclick="showToast('🧠 Quizzes coming soon!')">
+                <div class="strip-icon">🧠</div>
+                <div class="strip-text"><h4>Quizzes</h4><p>Multiple choice questions</p></div>
+            </div>
+            <div class="strip-item" onclick="showToast('💡 Challenges loading!')">
+                <div class="strip-icon">💡</div>
+                <div class="strip-text"><h4>Code Challenges</h4><p>Interactive problem solving</p></div>
+            </div>
+            <div class="strip-item" onclick="showToast('🏅 Practice problems opening!')">
+                <div class="strip-icon">🏅</div>
+                <div class="strip-text"><h4>Practice Problems</h4><p>Real interview questions</p></div>
+            </div>
+            <div class="strip-item" onclick="showToast('🎓 Certificate page loading!')">
+                <div class="strip-icon">🎓</div>
+                <div class="strip-text"><h4>Get Certified</h4><p>Industry recognized certs</p></div>
+            </div>
+            <div class="strip-item" onclick="showToast('🏆 Leaderboard coming!')">
+                <div class="strip-icon">🏆</div>
+                <div class="strip-text"><h4>League</h4><p>Earn XP & climb ranks</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── REFERENCES ── -->
+    <section>
+        <div class="section-title">📖 References</div>
+        <div class="ref-grid" id="ref-grid">
+            <!-- Filled by JS -->
+        </div>
+    </section>
+
+    <!-- ── WHERE TO START ── -->
+    <section style="margin-bottom:3rem;">
+        <div class="section-title">🗺️ Where To Start?</div>
+        <div style="background:linear-gradient(135deg,#f0faf5,#e6f7f1); border:1px solid #04AA6D; border-radius:12px; padding:2rem; display:flex; flex-wrap:wrap; gap:2rem; align-items:center;">
+            <div style="flex:1; min-width:250px;">
+                <h3 style="font-size:1.3rem; font-weight:800; color:#1a1a2e; margin-bottom:0.5rem;">New to programming?</h3>
+                <p style="color:#555; margin-bottom:1rem;">Start with HTML — it's the easiest way to see results fast. Build your first web page in minutes!</p>
+                <a href="#" style="background:var(--w3-green); color:#fff; padding:0.6rem 1.5rem; border-radius:4px; font-weight:700; display:inline-block;">Start with HTML →</a>
+            </div>
+            <div style="flex:1; min-width:250px;">
+                <h3 style="font-size:1.3rem; font-weight:800; color:#1a1a2e; margin-bottom:0.5rem;">Already a developer?</h3>
+                <p style="color:#555; margin-bottom:1rem;">Dive into advanced topics like AI, machine learning, cybersecurity, or modern frameworks.</p>
+                <a href="#" style="background:#282A35; color:#fff; padding:0.6rem 1.5rem; border-radius:4px; font-weight:700; display:inline-block;">Explore Advanced →</a>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h5>Tutorials</h5>
+            <a href="#">HTML</a><a href="#">CSS</a><a href="#">JavaScript</a>
+            <a href="#">Python</a><a href="#">SQL</a><a href="#">Java</a>
+            <a href="#">C++</a><a href="#">PHP</a>
+        </div>
+        <div class="footer-col">
+            <h5>References</h5>
+            <a href="#">HTML Tags</a><a href="#">CSS Reference</a>
+            <a href="#">JS Reference</a><a href="#">Python Ref</a>
+            <a href="#">SQL Reference</a>
+        </div>
+        <div class="footer-col">
+            <h5>Certifications</h5>
+            <a href="#">HTML Certificate</a><a href="#">CSS Certificate</a>
+            <a href="#">JS Certificate</a><a href="#">Python Certificate</a>
+            <a href="#">SQL Certificate</a>
+        </div>
+        <div class="footer-col">
+            <h5>Practice</h5>
+            <a href="#">Exercises</a><a href="#">Quizzes</a>
+            <a href="#">Code Challenges</a><a href="#">Practice Problems</a>
+            <a href="#">League</a>
+        </div>
+        <div class="footer-col">
+            <h5>SecureShield</h5>
+            <a href="index.html">🔐 Login Portal</a>
+            <a href="admin.html">🛡️ Admin Panel</a>
+            <a href="#" onclick="logout()">⏻ Logout</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        W3Schools SecureShield &copy; 2024 &bull; Powered by SecureShield Enterprise Security &bull;
+        All sessions are monitored for your protection.
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="api-origin.generated.js"></script>
+<script src="api-config.js"></script>
+<script src="inspectBlocker.js"></script>
+<script src="keyboardMonitor.js"></script>
+<script src="mouseMonitor.js"></script>
+<script src="script.js"></script>
+
+<script>
+/* ════════════════════════════════════
+   SecureShield W3Schools Dashboard JS
+════════════════════════════════════ */
+
+// ── Auth Guard ──────────────────────
+const authToken = localStorage.getItem('authToken');
+if (!authToken) window.location.href = 'index.html';
+
+// ── Language Cards Data ─────────────
+const LANGS = [
+    { icon:'🌐', name:'HTML',       tag:'Beginner', color:'#e34c26', pct:92 },
+    { icon:'🎨', name:'CSS',        tag:'Beginner', color:'#264de4', pct:88 },
+    { icon:'⚡', name:'JavaScript', tag:'Intermediate', color:'#f0db4f', pct:76 },
+    { icon:'🐍', name:'Python',     tag:'Beginner', color:'#3776ab', pct:82 },
+    { icon:'🗄️', name:'SQL',        tag:'Intermediate', color:'#e48e00', pct:70 },
+    { icon:'☕', name:'Java',       tag:'Intermediate', color:'#007396', pct:58 },
+    { icon:'⚙️', name:'C++',        tag:'Advanced', color:'#00599c', pct:45 },
+    { icon:'🐘', name:'PHP',        tag:'Intermediate', color:'#8892be', pct:60 },
+    { icon:'⚛️', name:'React',      tag:'Intermediate', color:'#61dafb', pct:50 },
+    { icon:'🟢', name:'Node.js',    tag:'Intermediate', color:'#339933', pct:55 },
+    { icon:'💎', name:'TypeScript', tag:'Intermediate', color:'#007acc', pct:40 },
+    { icon:'🦀', name:'Rust',       tag:'Advanced', color:'#ce422b', pct:20 },
+    { icon:'🐹', name:'Go',         tag:'Intermediate', color:'#00add8', pct:30 },
+    { icon:'🤖', name:'AI / ML',    tag:'Advanced', color:'#9c27b0', pct:35 },
+    { icon:'🔷', name:'Django',     tag:'Intermediate', color:'#092e20', pct:48 },
+    { icon:'📊', name:'DSA',        tag:'Intermediate', color:'#f44336', pct:42 },
+];
+
+const REFS = [
+    'HTML Tags','CSS Reference','JS Reference','jQuery Ref',
+    'Bootstrap 5','Python Ref','SQL Keywords','Java Ref',
+    'PHP Ref','C++ Ref','React Ref','Node.js Ref',
+    'Color Names','SVG Ref','XML Ref','JSON Ref',
+    'HTTP Methods','AJAX Ref','DOM Reference','Regex Guide',
+];
+
+// ── Render Language Grid ────────────
+function renderLangGrid() {
+    const grid = document.getElementById('lang-grid');
+    grid.innerHTML = LANGS.map(l => `
+        <div class="lang-card" onclick="showToast('📖 Opening ${l.name} tutorials…')">
+            <span class="lc-icon">${l.icon}</span>
+            <span class="lc-name">${l.name}</span>
+            <span class="lc-tag" style="color:${l.color}">${l.tag}</span>
+            <div class="lc-bar"><div class="lc-fill" style="width:${l.pct}%; background:${l.color}"></div></div>
+        </div>
+    `).join('');
+}
+
+// ── Render References ───────────────
+function renderRefs() {
+    const grid = document.getElementById('ref-grid');
+    grid.innerHTML = REFS.map(r => `
+        <div class="ref-chip" onclick="showToast('📖 ${r} reference opened!')">
+            📄 ${r}
+        </div>
+    `).join('');
+}
+
+// ── Load User Profile ───────────────
+async function loadUser() {
+    const API_BASE = window.__API_ORIGIN__ || 'http://localhost:6000';
+    try {
+        const resp = await fetch(`${API_BASE}/api/user/profile`, {
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        const data = await resp.json();
+        if (data.success && data.user) {
+            const name = data.user.email.split('@')[0] || 'Learner';
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-avatar').textContent = name[0].toUpperCase();
+        } else {
+            // Token invalid
+            localStorage.removeItem('authToken');
+            window.location.href = 'index.html';
+        }
+    } catch {
+        // Fallback — use token payload if possible
+        try {
+            const payload = JSON.parse(atob(authToken.split('.')[1]));
+            const name = (payload.email || payload.name || 'User').split('@')[0];
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-avatar').textContent = name[0].toUpperCase();
+        } catch { /* silent */ }
+    }
+}
+
+// ── Session Timer ────────────────────
+let sessionStart = Date.now();
+function updateSessionTimer() {
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('sec-login-time').textContent = `${m}:${s}`;
+}
+
+// ── Toast Notification ───────────────
+function showToast(msg, duration = 3000) {
+    const el = document.getElementById('float-alert');
+    document.getElementById('toast-msg').textContent = msg;
+    el.style.display = 'block';
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => el.style.display = 'none', duration);
+}
+
+// ── Search ────────────────────────────
+function handleSearch(e) {
+    if (e.key === 'Enter') doSearch();
+}
+function doSearch() {
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    showToast(`🔍 Searching for "${q}" — feature coming soon!`);
+}
+
+// ── Sub-nav active ───────────────────
+document.querySelectorAll('#subnav a').forEach(a => {
+    a.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('#subnav a').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// ── Logout ────────────────────────────
+function logout() {
+    showToast('🔒 Logging out securely…');
+    setTimeout(() => {
+        localStorage.removeItem('authToken');
+        window.location.href = 'index.html';
+    }, 800);
+}
+
+// ── Init ─────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+    renderLangGrid(); 
+    renderRefs();
+
+    // Hide loading after init
+    await loadUser();
+    setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+    }, 1200);
+
+    // Session timer
+    setInterval(updateSessionTimer, 1000);
+
+    // Simulate random threat count for security display
+    let threats = 0;
+    setInterval(() => {
+        if (Math.random() < 0.02) {
+            threats++;
+            document.getElementById('sec-threat').textContent = threats;
+            showToast(`🛡️ Threat blocked! SecureShield neutralized an intrusion attempt.`);
+        }
+    }, 3000);
+
+    // Welcome toast
+    setTimeout(() => showToast('✅ Welcome back to W3Schools SecureShield!'), 1400);
+});
+</script>
+
+</body>
+</html>

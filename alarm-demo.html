@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecureShield — Fire Alarm Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:       #ff1a1a;
+      --red-dim:   #8b0000;
+      --red-glow:  rgba(255, 26, 26, 0.5);
+      --amber:     #ff9900;
+      --green:     #00ff88;
+      --bg:        #030508;
+      --panel:     rgba(10, 12, 20, 0.92);
+      --border:    rgba(255, 26, 26, 0.3);
+      --text:      #e8eaf0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', monospace;
+      overflow: hidden;
+    }
+
+    /* ── Animated grid background ──────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,26,26,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,26,26,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridDrift 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 40px 40px; }
+    }
+
+    /* ── Red flash overlay ────────────────────────────────────────── */
+    #flashOverlay {
+      position: fixed; inset: 0;
+      background: var(--red);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.05s;
+    }
+
+    /* ── Main panel ───────────────────────────────────────────────── */
+    .panel {
+      position: relative; z-index: 1;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 56px;
+      width: min(560px, 95vw);
+      text-align: center;
+      box-shadow:
+        0 0 60px var(--red-glow),
+        0 0 120px rgba(255,26,26,0.15),
+        inset 0 0 40px rgba(255,26,26,0.05);
+      backdrop-filter: blur(18px);
+    }
+
+    /* ── Shield icon ──────────────────────────────────────────────── */
+    .shield-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+
+    .shield-svg {
+      width: 80px;
+      height: 80px;
+      filter: drop-shadow(0 0 12px var(--red));
+      transition: filter 0.3s;
+    }
+
+    .shield-wrap.alarming .shield-svg {
+      animation: shieldPulse 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes shieldPulse {
+      from { filter: drop-shadow(0 0 8px var(--red)); transform: scale(1); }
+      to   { filter: drop-shadow(0 0 32px var(--red)) drop-shadow(0 0 64px var(--red)); transform: scale(1.08); }
+    }
+
+    /* ── Title ────────────────────────────────────────────────────── */
+    .brand {
+      font-size: 11px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--red-dim);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+      line-height: 1.2;
+    }
+
+    /* ── Status badge ─────────────────────────────────────────────── */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 18px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+      margin-bottom: 36px;
+      transition: all 0.3s;
+    }
+
+    .status-badge.standby { color: #556; border-color: #334; }
+    .status-badge.active  { color: var(--red); border-color: var(--red); animation: badgePulse 1s infinite; }
+
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 0 0 var(--red-glow); }
+      50%       { box-shadow: 0 0 0 6px transparent; }
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-badge.active .status-dot {
+      animation: dotBlink 0.5s infinite;
+    }
+
+    @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+
+    /* ── Waveform visualizer ──────────────────────────────────────── */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 48px;
+      margin-bottom: 36px;
+    }
+
+    .wave-bar {
+      width: 5px;
+      border-radius: 3px;
+      background: var(--red-dim);
+      height: 6px;
+      transition: background 0.3s;
+    }
+
+    .waveform.active .wave-bar {
+      background: var(--red);
+      animation: waveAnim 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes waveAnim {
+      from { transform: scaleY(1); }
+      to   { transform: scaleY(var(--h, 1)); }
+    }
+
+    /* ── Alarm trigger button ─────────────────────────────────────── */
+    #alarmBtn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 44px;
+      border-radius: 10px;
+      border: 2px solid var(--red);
+      background: rgba(255, 26, 26, 0.12);
+      color: var(--red);
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      overflow: hidden;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      margin-bottom: 20px;
+    }
+
+    #alarmBtn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,100,100,0.15) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #alarmBtn:hover { background: rgba(255,26,26,0.22); box-shadow: 0 0 24px var(--red-glow); }
+    #alarmBtn:hover::before { opacity: 1; }
+    #alarmBtn:active { transform: scale(0.97); }
+
+    #alarmBtn.active-alarm {
+      background: rgba(255,26,26,0.28);
+      box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(255,26,26,0.2);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* ── Config sliders ───────────────────────────────────────────── */
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .config-item label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #445;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .config-item .val {
+      font-size: 13px;
+      color: var(--amber);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 3px;
+      background: #1a1f2e;
+      border-radius: 2px;
+      outline: none;
+      margin-top: 4px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--red);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--red-glow);
+    }
+
+    /* ── Voice toggle ─────────────────────────────────────────────── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #556;
+      font-family: 'Share Tech Mono', monospace;
+      margin-bottom: 28px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 38px; height: 20px;
+      display: inline-block;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .slider-tog {
+      position: absolute; inset: 0;
+      background: #1a1f2e;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid #334;
+      transition: background 0.3s;
+    }
+
+    .slider-tog::before {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 2px; top: 2px;
+      border-radius: 50%;
+      background: #445;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .toggle input:checked + .slider-tog { background: rgba(255,26,26,0.25); border-color: var(--red); }
+    .toggle input:checked + .slider-tog::before { transform: translateX(18px); background: var(--red); }
+
+    /* ── Log console ──────────────────────────────────────────────── */
+    .log-box {
+      background: #040508;
+      border: 1px solid #141824;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #334;
+      text-align: left;
+      height: 72px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .log-line { margin-bottom: 2px; transition: color 0.3s; }
+    .log-line.active { color: var(--green); }
+    .log-line.warn   { color: var(--amber); }
+    .log-line.danger { color: var(--red); }
+
+    /* ── Scan line on panel ───────────────────────────────────────── */
+    .panel::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      animation: scanLine 3s linear infinite;
+      border-radius: 16px 16px 0 0;
+    }
+
+    @keyframes scanLine {
+      from { transform: translateX(-100%); opacity: 0.6; }
+      to   { transform: translateX(200%);  opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+<div id="flashOverlay"></div>
+
+<div class="panel">
+  <!-- Shield SVG -->
+  <div class="shield-wrap" id="shieldWrap">
+    <svg class="shield-svg" viewBox="0 0 80 88" fill="none">
+      <path d="M40 4 L8 18 L8 44 C8 62 22 78 40 84 C58 78 72 62 72 44 L72 18 Z"
+            fill="rgba(255,26,26,0.12)" stroke="#ff1a1a" stroke-width="2.5"/>
+      <path d="M40 16 L18 27 L18 44 C18 57 27 68 40 73 C53 68 62 57 62 44 L62 27 Z"
+            fill="rgba(255,26,26,0.08)" stroke="rgba(255,80,80,0.4)" stroke-width="1.5"/>
+      <!-- Exclamation mark -->
+      <rect x="37" y="30" width="6" height="22" rx="3" fill="#ff1a1a"/>
+      <circle cx="40" cy="60" r="3.5" fill="#ff1a1a"/>
+    </svg>
+  </div>
+
+  <p class="brand">SecureShield™ v3.0</p>
+  <h1>🔥 FIRE ALARM<br/>BREACH SYSTEM</h1>
+
+  <div class="status-badge standby" id="statusBadge">
+    <span class="status-dot"></span>
+    <span id="statusText">SYSTEM STANDBY</span>
+  </div>
+
+  <!-- Waveform -->
+  <div class="waveform" id="waveform"></div>
+
+  <!-- Config -->
+  <div class="config-grid">
+    <div class="config-item">
+      <label>Primary Freq — <span class="val" id="freqVal">3100Hz</span></label>
+      <input type="range" id="freqSlider" min="1000" max="4000" value="3100" step="100" />
+    </div>
+    <div class="config-item">
+      <label>Volume — <span class="val" id="volVal">85%</span></label>
+      <input type="range" id="volSlider" min="0" max="100" value="85" step="5" />
+    </div>
+    <div class="config-item">
+      <label>Blast Duration — <span class="val" id="beepVal">500ms</span></label>
+      <input type="range" id="beepSlider" min="200" max="1000" value="500" step="50" />
+    </div>
+    <div class="config-item">
+      <label>Burst Pause — <span class="val" id="pauseVal">1500ms</span></label>
+      <input type="range" id="pauseSlider" min="500" max="3000" value="1500" step="100" />
+    </div>
+  </div>
+
+  <!-- Voice toggle -->
+  <div class="toggle-row">
+    <span>ROBOTIC VOICE</span>
+    <label class="toggle">
+      <input type="checkbox" id="voiceToggle" checked />
+      <span class="slider-tog"></span>
+    </label>
+    <span id="voiceLabel" style="color:#ff1a1a">ON</span>
+  </div>
+
+  <!-- Trigger button -->
+  <button id="alarmBtn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 1L3 5v6c0 5.25 3.75 10.15 9 11.35C17.25 21.15 21 16.25 21 11V5L12 1z"/>
+    </svg>
+    <span id="btnLabel">TRIGGER FIRE ALARM</span>
+  </button>
+
+  <!-- Log console -->
+  <div class="log-box" id="logBox">
+    <div class="log-line">[SYSTEM] Fire alarm engine loaded</div>
+    <div class="log-line">[SYSTEM] Web Audio API: <span id="audioSupport">checking…</span></div>
+    <div class="log-line">[SYSTEM] TTS engine: <span id="ttsSupport">checking…</span></div>
+  </div>
+</div>
+
+<script src="security-alarm.js"></script>
+<script>
+  /* ── DOM refs ──────────────────────────────────────────────────────── */
+  const btn        = document.getElementById('alarmBtn');
+  const btnLabel   = document.getElementById('btnLabel');
+  const statusBadge = document.getElementById('statusBadge');
+  const statusText  = document.getElementById('statusText');
+  const shieldWrap  = document.getElementById('shieldWrap');
+  const waveform    = document.getElementById('waveform');
+  const logBox      = document.getElementById('logBox');
+  const flashOverlay = document.getElementById('flashOverlay');
+  const voiceToggle  = document.getElementById('voiceToggle');
+  const voiceLabel   = document.getElementById('voiceLabel');
+
+  const freqSlider  = document.getElementById('freqSlider');
+  const volSlider   = document.getElementById('volSlider');
+  const beepSlider  = document.getElementById('beepSlider');
+  const pauseSlider = document.getElementById('pauseSlider');
+  const freqVal  = document.getElementById('freqVal');
+  const volVal   = document.getElementById('volVal');
+  const beepVal  = document.getElementById('beepVal');
+  const pauseVal = document.getElementById('pauseVal');
+
+  /* ── Waveform bars ─────────────────────────────────────────────────── */
+  const NUM_BARS = 32;
+  for (let i = 0; i < NUM_BARS; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'wave-bar';
+    const h = (0.3 + Math.random() * 4).toFixed(2);
+    bar.style.setProperty('--h', h);
+    bar.style.height = `${6 + Math.random() * 10}px`;
+    waveform.appendChild(bar);
+  }
+
+  /* ── System checks ─────────────────────────────────────────────────── */
+  document.getElementById('audioSupport').textContent =
+    (window.AudioContext || window.webkitAudioContext) ? '✓ READY' : '✗ UNSUPPORTED';
+  document.getElementById('audioSupport').style.color =
+    (window.AudioContext || window.webkitAudioContext) ? '#00ff88' : '#ff1a1a';
+  document.getElementById('ttsSupport').textContent =
+    window.speechSynthesis ? '✓ READY' : '✗ UNSUPPORTED';
+  document.getElementById('ttsSupport').style.color =
+    window.speechSynthesis ? '#00ff88' : '#ff9900';
+
+  /* ── Log helper ────────────────────────────────────────────────────── */
+  function addLog(text, cls = '') {
+    const line = document.createElement('div');
+    line.className = `log-line ${cls}`;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    logBox.appendChild(line);
+    while (logBox.children.length > 4) logBox.removeChild(logBox.firstChild);
+  }
+
+  /* ── Flash effect ──────────────────────────────────────────────────── */
+  let flashInterval = null;
+  function startFlash() {
+    let on = false;
+    flashInterval = setInterval(() => {
+      on = !on;
+      flashOverlay.style.opacity = on ? '0.07' : '0';
+    }, 500);
+  }
+  function stopFlash() {
+    clearInterval(flashInterval);
+    flashOverlay.style.opacity = '0';
+  }
+
+  /* ── Alarm instance ────────────────────────────────────────────────── */
+  let alarm = null;
+
+  function buildAlarm() {
+    return new SecurityAlarm({
+      primaryFreq:    parseInt(freqSlider.value),
+      secondaryFreq:  Math.round(parseInt(freqSlider.value) * 0.76),
+      volume:         parseInt(volSlider.value) / 100,
+      blastDuration:  parseInt(beepSlider.value),
+      burstPause:     parseInt(pauseSlider.value),
+      voiceEnabled:   voiceToggle.checked,
+      onCycleStart: () => {
+        addLog('🔥 Fire alarm burst — T-3 cycle active', 'danger');
+      }
+    });
+  }
+
+  /* ── UI state helpers ──────────────────────────────────────────────── */
+  function setActiveUI(active) {
+    btn.classList.toggle('active-alarm', active);
+    btnLabel.textContent = active ? 'SILENCE ALARM' : 'TRIGGER FIRE ALARM';
+    statusBadge.className = `status-badge ${active ? 'active' : 'standby'}`;
+    statusText.textContent = active ? '🔥 BREACH DETECTED' : 'SYSTEM STANDBY';
+    shieldWrap.classList.toggle('alarming', active);
+    waveform.classList.toggle('active', active);
+    document.title = active
+      ? '🚨 FIRE ALARM — BREACH DETECTED'
+      : 'SecureShield — Fire Alarm Test';
+  }
+
+  /* ── Trigger button ────────────────────────────────────────────────── */
+  btn.addEventListener('click', () => {
+    if (!alarm || !alarm.isPlaying) {
+      alarm = buildAlarm();
+      alarm.start();
+      setActiveUI(true);
+      startFlash();
+      addLog('🔥🔥🔥 FIRE ALARM ACTIVATED — BREACH PROTOCOL', 'danger');
+      addLog('Robotic voice broadcasting...', 'warn');
+    } else {
+      alarm.stop();
+      alarm = null;
+      setActiveUI(false);
+      stopFlash();
+      addLog('Alarm silenced by operator', 'active');
+    }
+  });
+
+  /* ── Slider labels ─────────────────────────────────────────────────── */
+  freqSlider.addEventListener('input',  () => { freqVal.textContent  = freqSlider.value + 'Hz'; });
+  volSlider.addEventListener('input',   () => { volVal.textContent   = volSlider.value + '%'; });
+  beepSlider.addEventListener('input',  () => { beepVal.textContent  = beepSlider.value + 'ms'; });
+  pauseSlider.addEventListener('input', () => { pauseVal.textContent = pauseSlider.value + 'ms'; });
+
+  /* ── Voice toggle label ────────────────────────────────────────────── */
+  voiceToggle.addEventListener('change', () => {
+    voiceLabel.textContent = voiceToggle.checked ? 'ON' : 'OFF';
+    voiceLabel.style.color = voiceToggle.checked ? '#ff1a1a' : '#556';
+  });
+</script>
+</body>
+</html>

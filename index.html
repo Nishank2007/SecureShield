@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureShield | Premium Cybersecurity & Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    
+    <!-- Red Alert Overlay -->
+    <div id="red-alert">
+        <div class="alert-panel">
+            <div class="alert-pulse"><i class="ph-fill ph-warning-octagon"></i></div>
+            <h1 style="color:#fff; margin-bottom:1rem;">SECURITY BREACH</h1>
+            <p style="color:var(--text-muted); margin-bottom:2rem;">Multiple intrusion attempts detected. System locked for security.</p>
+            <div style="font-size:3rem; font-weight:800; color:var(--error); margin-bottom:1rem;" id="cooldown-timer">30</div>
+            <button onclick="resetAlert()" id="alert-btn" class="btn-submit" style="background:#fff; color:var(--error); width:auto; padding:1rem 3rem;">RETRY SESSION</button>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <!-- Hero Side -->
+        <section class="hero-side">
+            <div class="hero-logo">
+                <div class="hero-logo-box">W3</div>
+                <span>SecureShield</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Learn to code,<br>
+                <span>Stay protected.</span>
+            </h1>
+            
+            <p class="hero-desc">
+                Experience the world's most secure learning environment. Combine world-class tutorials with cutting-edge cybersecurity protocols.
+            </p>
+            
+            <ul class="hero-features">
+                <li><i class="ph-bold ph-shield-check"></i> Advanced Intrusion Detection System</li>
+                <li><i class="ph-bold ph-envelope-open"></i> Two-Factor Authentication (MFA)</li>
+                <li><i class="ph-bold ph-graduation-cap"></i> 500+ Premium Coding Paths</li>
+                <li><i class="ph-bold ph-certificate"></i> Globally Verified Certificates</li>
+            </ul>
+        </section>
+
+        <!-- Auth Side -->
+        <section class="auth-side">
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button id="tab-login" class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+                    <button id="tab-signup" class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+                </div>
+
+                <!-- LOGIN -->
+                <div id="loginSection" class="auth-view active">
+                    <div class="auth-header">
+                        <h2>Welcome back</h2>
+                        <p>Credentials required to access secure portal</p>
+                    </div>
+                    
+                    <div id="loginMsg" class="msg-box"></div>
+
+                    <div class="input-group">
+                        <label>Identity (Email)</label>
+                        <input type="email" id="loginEmail" placeholder="you@secureshield.ai">
+                    </div>
+                    <div class="input-group">
+                        <label>Access Key (Password)</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••">
+                    </div>
+
+                    <div class="captcha-box" style="margin-bottom:1.5rem;">
+                        <div class="captcha-display" style="background:rgba(0,0,0,0.5); padding:1rem; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="login-captcha-code" style="font-family:'JetBrains Mono'; font-weight:800; color:var(--primary); letter-spacing:0.2em; font-size:1.2rem;">X7R2N</span>
+                            <button onclick="refreshCaptcha('login')" style="background:none; border:none; cursor:pointer; color:#fff; font-size:1.2rem;"><i class="ph ph-arrows-clockwise"></i></button>
+                        </div>
+                        <input type="text" id="login-captcha-input" placeholder="Verify Security Code" style="margin-top:0.5rem; width:100%; padding:0.75rem; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:#fff;">
+                    </div>
+
+                    <button class="btn-submit" id="loginBtn" onclick="submitLogin()">AUTHORIZE ACCESS</button>
+                </div>
+
+                <!-- SIGNUP -->
+                <div id="signupSection" class="auth-view">
+                    <div class="auth-header">
+                        <h2>Create Identity</h2>
+                        <p>Initialize your secure learning profile</p>
+                    </div>
+                    
+                    <div id="signupMsg" class="msg-box"></div>
+
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signupEmail" placeholder="user@global.com">
+                    </div>
+                    
+                    <div class="input-group">
+                        <div style="display:flex; justify-content:space-between;">
+                            <label>Secure Password</label>
+                            <span onclick="generateStrongPassword()" style="font-size:0.75rem; color:var(--primary); cursor:pointer; font-weight:700;">[Generate]</span>
+                        </div>
+                        <input type="password" id="signupPassword" placeholder="8+ characters" oninput="updateStrength(this.value)">
+                        <div class="strength-wrap">
+                            <div class="strength-bar-bg"><div id="strength-bar" class="strength-bar-fill"></div></div>
+                            <div id="strength-text" class="strength-label"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Confirm Access Key</label>
+                        <input type="password" id="signupConfirmPassword" placeholder="Re-enter password">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mobile Protocol</label>
+                        <div style="display:grid; grid-template-columns: 85px 1fr; gap:0.5rem;">
+                            <select id="countryCode" style="background:rgba(0,0,0,0.3); color:#fff; border:1px solid var(--border); border-radius:12px;">
+                                <option value="+91">IN (+91)</option>
+                                <option value="+1">US (+1)</option>
+                            </select>
+                            <input type="tel" id="signupMobile" placeholder="Number">
+                        </div>
+                    </div>
+
+                    <div class="captcha-box" style="margin-bottom:1.5rem;">
+                        <div class="captcha-display" style="background:rgba(0,0,0,0.5); padding:0.8rem; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span id="signup-captcha-code" style="font-family:'JetBrains Mono'; font-weight:800; color:var(--primary); letter-spacing:0.2em;">A B 1 2</span>
+                            <button onclick="refreshCaptcha('signup')" style="background:none; border:none; cursor:pointer; color:#fff;"><i class="ph ph-arrows-clockwise"></i></button>
+                        </div>
+                        <input type="text" id="signup-captcha-input" placeholder="Verify Code" style="margin-top:0.5rem; width:100%; padding:0.75rem; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:#fff;">
+                    </div>
+
+                    <button class="btn-submit" id="signupBtn" onclick="submitSignup()">INITIALIZE ACCOUNT</button>
+                </div>
+
+                <!-- OTP -->
+                <div id="otpSection" class="auth-view">
+                    <div class="auth-header">
+                        <h2>MFA Required</h2>
+                        <p>Verify your secondary authentication layer</p>
+                    </div>
+
+                    <div id="otp-dest-info" style="text-align:center;font-size:0.88rem;color:#94a3b8;margin-bottom:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">OTP sent to your email</div>
+                    
+                    <div id="otpMsg" class="msg-box"></div>
+
+                    <div class="otp-container">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric">
+                    </div>
+
+                    <button class="btn-submit" onclick="verifyOTP()">VERIFY PROTOCOL</button>
+                    <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-top:1.5rem;">
+                        Issues receiving code? <span onclick="resendOTP()" style="color:var(--primary); cursor:pointer; font-weight:700;">Resend Token</span>
+                    </p>
+                </div>
+
+            </div>
+            
+            <!-- Link to Admin Portal -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/admin.html" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; font-weight: 500; letter-spacing: 0.05em; transition: color 0.3s ease;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                    <i class="ph ph-shield-star"></i> Access Admin Portal
+                </a>
+            </div>
+            
+        </section>
+    </div>
+
+    <script src="api-origin.generated.js"></script>
+    <script src="api-config.js"></script>
+    <script src="inspectBlocker.js"></script>
+    <script src="keyboardMonitor.js"></script>
+    <script src="mouseMonitor.js"></script>
+    <script src="security-alarm.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

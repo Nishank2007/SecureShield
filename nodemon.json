@@ -1,0 +1,8 @@
+{
+    "ignore": [
+        "api-origin.generated.js",
+        "api-config.js",
+        "*.log",
+        "node_modules"
+    ]
+}

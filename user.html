@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting… | SecureShield</title>
+    <style>
+        body { background: #282A35; display:flex; align-items:center; justify-content:center; min-height:100vh; font-family:sans-serif; }
+        .msg { text-align:center; color:#aaa; }
+        .logo { font-size:2.5rem; font-weight:900; color:#04AA6D; font-family:monospace; margin-bottom:0.75rem; }
+        .bar { width:200px; height:3px; background:rgba(255,255,255,0.1); border-radius:10px; margin:1rem auto; overflow:hidden; }
+        .fill { height:100%; background:#04AA6D; border-radius:10px; animation:ld 0.9s ease-in-out forwards; }
+        @keyframes ld { from{width:0} to{width:100%} }
+    </style>
+</head>
+<body>
+    <div class="msg">
+        <div class="logo">W3</div>
+        <p>Verifying session…</p>
+        <div class="bar"><div class="fill"></div></div>
+    </div>
+    <script>
+        // Compatibility redirect — new users go to w3dashboard, unauthenticated go to login
+        const token = localStorage.getItem('authToken');
+        setTimeout(() => {
+            if (token) {
+                window.location.href = 'w3dashboard.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }, 950);
+    </script>
+    <script src="inspectBlocker.js"></script>
+</body>
+</html>
